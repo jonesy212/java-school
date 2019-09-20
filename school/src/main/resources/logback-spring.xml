@@ -1,0 +1,93 @@
+<!--what where and how
+using trace will trace what the program
+is doing-->
+
+<configuration>
+<!--    going to the console which is
+the class it is going to use -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+<!--            BELOW PATTERN
+                DATE AND TIME;
+                CALLING CLASS -LAST 25 CHARACTERS;
+                PARTICULAR THREAD
+                LINE NUMBER AND
+                LEVELS- INFO TRACE DEBUG OFF
+                ACTUAL MESSAGE-->
+            <pattern>[%d{yyyy-MM-dd' 'HH:mm:ss.SSS}] [%25.25class] [%thread] [%line] [%-5level] %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>/tmp/var/mylog.log</File>
+        <append>true</append>
+        <encoder>
+<!--            creates a new day and file that is date stamped
+if the becomes 10mg, it will make a new file with a different version-->
+            <pattern>[%d{yyyy-MM-dd' 'HH:mm:ss.SSS}] [%C] [%t] [%L] [%-5p] %m%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>/tmp/var/mylog.%d{yyyy-MM-dd HH}.%i.txt</fileNamePattern>
+<!--            if the becomes 10mg, it will make a new file with a different version-->
+            <maxFileSize>10MB</maxFileSize>
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="TOMCAT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>/tmp/var/myTomCatLog.log</File>
+        <append>true</append>
+        <encoder>
+<!--            creates a new day and file that is date stamped
+            if the becomes 10mg, it will make a new file with a different version-->
+            <pattern>[%d{yyyy-MM-dd' 'HH:mm:ss.SSS}] [%C] [%t] [%L] [%-5p] %m%n</pattern>
+
+        </encoder>
+        
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>/tmp/var/myTomCatLog.%d{yyyy-MM-dd HH}.%i.txt</fileNamePattern>
+            <!--            if the becomes 10mg, it will make a new file with a different version-->
+            <maxFileSize>10MB</maxFileSize>
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+    <!--    looks at everything that the springframework
+    is doing-->
+    <logger name = "org.springframework" level = "OFF" additivity="false">
+    <appender-ref ref="STDOUT"/>
+    </logger>
+<!--    package name you want to log you can
+get specific by doing com.lambdaschool.school etc-->
+    <logger name=" com.lambdaschool" level = "OFF">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <logger name = "com.lambdaschool.school.exceptions" level="TRACE" additivity = "false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+<!--    FOR THE 2ND DEPENDENCY, WE MUST ADD
+AND ADDITIONAL APPENDER TO BE ABLE TO LOG TOMCAT
+INTO THE PROPER FOLDER AS WELL
+TOMCAT IS ADDED BELOW TO THE LOGGERS, BECAUSE
+IT APPEARS IN ALL OF THEM-->
+    <logger name ="org.apache.tomcat" level = "OFF" addivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="TOMCAT"/>
+    </logger>
+    <logger name="org.apache.coyote" level = "OFF" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="TOMCAT"/>
+    </logger>
+    <logger name ="org.apache.catalina" level = "OFF" additivity = "false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="TOMCAT"/>
+    </logger>
+
+</configuration>
